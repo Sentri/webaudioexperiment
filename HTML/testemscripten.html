@@ -1,0 +1,40 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>Test: Emscripten nodes</title>
+</head>
+<body>
+    <h1>Emscripten Nodes</h1>
+    <p><a href="index.html">Back to home</a></p>
+    <hr />
+
+    <button id="latencytest">
+        Latency
+    </button>
+
+    <hr />
+
+    <button id="polyphonytest">
+        Polyphony
+    </button>
+    Notes: <input type="number" id="polyphonynotes" value="1" min="1" step="1" max="128" />
+    Multiplier: <input type="number" id="polyphonymulti" value="1" min="1" step="1" max="100" />
+
+    <hr />
+    <p>Latency plays a single note 69, Polyphony starts from 64 and continues 65, 63, 66, 62, ...</p>
+    <p>Multiplier multiplies the amount of notes played at the same time.</p>
+
+    <script type="text/javascript" src="js/SimpleOscillator.js"></script>
+    <script type="text/javascript" src="js/interface.js"></script>
+    <script type="text/javascript" src="js/tests.js"></script>
+    <script type="text/javascript">
+
+        var ai = new EmscriptenInterface();
+
+        var tester = new AudioTest(ai);
+        tester.bindLatencyTest('latencytest');
+        tester.bindPolyphonyTest('polyphonytest', 'polyphonynotes', 'polyphonymulti');
+
+    </script>
+</body>
+</html>
