@@ -65,14 +65,15 @@ function ScriptInterface() {
     this.node.multiplier = 1;
 
     this.node.onaudioprocess = function (event) {
-        var input, output, N, n, i, I, dphi;
+        var input, output, N, n, i, I, dphi, sr;
         output = event.outputBuffer.getChannelData(0);
+		sr = this.context.sampleRate;
         N = output.length;
         I = this.notes.length;
         for (n = 0; n < N; n++) {
             output[n] = 0;
             for (i = 0; i < I; i++) {
-                dphi = this.notes[i] / this.context.sampleRate;
+                dphi = this.notes[i] / sr;
                 output[n] += Math.sin(this.phases[i] * 2 * Math.PI) * this.multiplier;
                 this.phases[i] += dphi;
                 if (this.phases[i] > 1) this.phases[i] -= 1;
@@ -111,11 +112,10 @@ function EmscriptenInterface() {
         output = event.outputBuffer.getChannelData(0);
         var l = output.length;
 
-        // copy the output buffer into the Emscripten heap
+        // allocate space from Emscripten heap
         var nDataBytes = l * output.BYTES_PER_ELEMENT;
         var dataPtr = Module._malloc(nDataBytes);
         var dataHeap = new Uint8Array(Module.HEAPU8.buffer, dataPtr, nDataBytes);
-        dataHeap.set(new Uint8Array(output.buffer));
 
         // call the wrapper method with the pointer argument
         this.oscillator.generateOutputEm(dataHeap.byteOffset, l);
